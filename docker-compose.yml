@@ -1,0 +1,36 @@
+version: '3'
+services:
+  postgres:
+    container_name: postgres-db
+    image: postgres:latest
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+    # ports:
+    #   - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: secret
+      POSTGRES_USER: postgres
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    container_name: pgbouncer-db
+    environment:
+      - DB_HOST=postgres-db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=secret
+      - ADMIN_USERS=postgres
+    #   - AUTH_TYPE=scram-sha-256
+    #   - AUTH_FILE=/etc/pgbouncer/userlist.txt
+    # volumes:
+    #   - ./userlist.txt:/etc/pgbouncer/userlist.txt
+    ports:
+      - 5432:5432
+  adminer:
+    container_name: adminer-server
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+      - pgbouncer
