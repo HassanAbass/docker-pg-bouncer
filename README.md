@@ -18,5 +18,10 @@ This repository contains a Docker Compose configuration that sets up a developme
    ```bash
    docker-compose up -d
 ## Testing
-I added Adminer in case you want to visualize the database you can open it [localhost:8080](`http://localhost:8080`)
-![Alt text](image.png)
+1. Using the terminal to access postgres through pg bouncer
+    ```bash
+   psql -h localhost -p 6432 -U postgres
+   > insert password(secret)
+1. Using Adminer(light DB management tool), open it using `8080` port [localhost:8080](`http://localhost:8080`)
+
+   ![adminer](image.png)

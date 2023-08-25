@@ -5,11 +5,14 @@ services:
     image: postgres:latest
     volumes:
       - ./db-data:/var/lib/postgresql/data
-    # ports:
-    #   - 5432:5432
+      - ./initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - 5432:5432
     environment:
-      POSTGRES_PASSWORD: secret
-      POSTGRES_USER: postgres
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_USER=postgres
+      - POSTGRES_HOST_AUTH_METHOD=md5
+      - POSTGRES_INITDB_ARGS=--auth=md5
   pgbouncer:
     image: edoburu/pgbouncer:latest
     container_name: pgbouncer-db
@@ -18,13 +21,14 @@ services:
       - DB_PORT=5432
       - DB_USER=postgres
       - DB_PASSWORD=secret
-      - ADMIN_USERS=postgres
-    #   - AUTH_TYPE=scram-sha-256
-    #   - AUTH_FILE=/etc/pgbouncer/userlist.txt
-    # volumes:
-    #   - ./userlist.txt:/etc/pgbouncer/userlist.txt
+      - ADMIN_USERS=postgres, admin 
+      - AUTH_TYPE=md5
+      - AUTH_FILE=/etc/pgbouncer/userlist.txt
+    volumes:
+      - ./userlist.txt:/etc/pgbouncer/userlist.txt
+      - ./pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini
     ports:
-      - 5432:5432
+      - 6432:6432
   adminer:
     container_name: adminer-server
     image: adminer
